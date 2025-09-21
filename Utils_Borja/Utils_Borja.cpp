@@ -113,6 +113,18 @@ void utl::Clamp(float& num, float min, float max)
 	}
 }
 
+float utl::Clamped(float num, float min, float max)
+{
+	float n = num;
+	if (num < min) {
+		n = min;
+	}
+	if (num > max) {
+		n = max;
+	}
+	return n;
+}
+
 float utl::Abs(float& num)
 {
 	if (num < 0) {

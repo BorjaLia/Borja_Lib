@@ -162,6 +162,7 @@ extern ctrl::ButtonMouse menuSelectionMouseButton;
 namespace utl {
 
 	void Clamp(float& num, float min = 0, float max = 1.0f);		// clamp number between min and max
+	float Clamped(float num, float min = 0, float max = 1.0f);		// clamp number between min and max
 	float Abs(float& num);										// makes the number positive
 
 	char LastKeyPressed();										// returns last key press. false if none
