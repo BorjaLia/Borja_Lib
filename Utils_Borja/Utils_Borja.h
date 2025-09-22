@@ -561,6 +561,7 @@ namespace btn {
 	};
 
 	void InitButtonDefaults();
+	void DeInitButtonDefaults();
 
 	void Init(Button& button, bool firstInit = false);
 	void Init(Button buttons[], int buttonsSize);

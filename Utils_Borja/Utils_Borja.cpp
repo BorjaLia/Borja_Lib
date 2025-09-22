@@ -1647,6 +1647,20 @@ void btn::InitButtonDefaults()
 	fnt::Init(rend::defaultFont);
 }
 
+void btn::DeInitButtonDefaults()
+{
+	drw::DeInitSpriteData(rend::defaultContainerTexture);
+
+	drw::DeInitSpriteData(rend::defaultButtonMainTexture);
+	drw::DeInitSpriteData(rend::defaultButtonHoveredTexture);
+
+	snd::DeInit(rend::defaultButtonClickDownSound);
+	snd::DeInit(rend::defaultButtonClickUpSound);
+	snd::DeInit(rend::defaultButtonHoverSound);
+
+	fnt::DeInit(rend::defaultFont);
+}
+
 void btn::Init(Button& button, bool firstInit)
 {
 	if (firstInit) {
@@ -1921,9 +1935,6 @@ void fnt::DeInit(rend::TextData& textData)
 	case rend::GraphicsLib::RAYLIB: {
 
 #ifdef HAS_RAYLIB
-		if (!textData.raylibInitialized) {
-			return;
-		}
 		UnloadFont(textData.font);
 		textData.raylibInitialized = false;
 #endif
