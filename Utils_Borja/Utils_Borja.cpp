@@ -67,7 +67,6 @@ bool ctrl::GetKeyDown(Key key)
 ctrl::Key ctrl::GetKeyDown()
 {
 
-
 	switch (rend::activeGraphics)
 	{
 	case rend::GraphicsLib::NONE: {
@@ -79,7 +78,9 @@ ctrl::Key ctrl::GetKeyDown()
 #ifdef HAS_RAYLIB
 		for (int i = 0; i < (int)ctrl::Key::SIZE; i++)
 		{
-			return (ctrl::Key)IsKeyDown(i);
+			if (IsKeyDown(i)) {
+				return (ctrl::Key)i;
+			}
 		}
 #endif
 		break;
@@ -89,7 +90,9 @@ ctrl::Key ctrl::GetKeyDown()
 #ifdef HAS_SIGIL
 		for (int i = 0; i < (int)ctrl::Key::SIZE; i++)
 		{
-			return (ctrl::Key)slGetKey(i);
+			if (slGetKey(i)) {
+				return (ctrl::Key)i;
+			}
 		}
 #endif
 		break;
@@ -758,7 +761,7 @@ void rend::OpenWindow(vec::Vector2 size, const char* title, bool fullScreen)
 		SetWindowState(FLAG_WINDOW_RESIZABLE);
 		InitWindow(size.x, size.y, graphics.c_str());
 		int monitor = GetCurrentMonitor();
-		SetWindowPosition((GetMonitorWidth(monitor) / 2) - windowSize.x/2, (GetMonitorHeight(monitor) / 2) - windowSize.y / 2);
+		SetWindowPosition((GetMonitorWidth(monitor) / 2) - windowSize.x / 2, (GetMonitorHeight(monitor) / 2) - windowSize.y / 2);
 		if (fullScreen) {
 			ToggleFullscreen();
 		}
@@ -1154,7 +1157,7 @@ void drw::Text(const char* text, rend::TextData& textData, vec::Vector2 pos, int
 		textSize.y = slGetTextHeight(text) / rend::windowSize.y;
 		//slSetTextAlign(SL_ALIGN_CENTER);
 		//slText(pos.x * rend::windowSize.x + offset.x * rend::windowSize.x, rend::windowSize.y * (1.0f - pos.y) + offset.y * rend::windowSize.y, text);
-		slText(pos.x * rend::windowSize.x + offset.x * rend::windowSize.x - rend::windowSize.x * textSize.x/2, rend::windowSize.y * pos.y + offset.y * rend::windowSize.y - rend::windowSize.y * textSize.y/2, text);
+		slText(pos.x * rend::windowSize.x + offset.x * rend::windowSize.x - rend::windowSize.x * textSize.x / 2, rend::windowSize.y * pos.y + offset.y * rend::windowSize.y - rend::windowSize.y * textSize.y / 2, text);
 		break;
 	}
 	default:
@@ -1743,7 +1746,7 @@ void btn::Init(Container& container, Button buttons[], int buttonsSize)
 void btn::Init(Container& container)
 {
 	container.size = drw::PercentToScreen(container.size);
-	
+
 	container.texture = rend::defaultContainerTexture;
 }
 
@@ -1857,7 +1860,7 @@ void btn::Draw(Button& button) {
 		drw::Rectangle(button.pos, button.size, button.activeColor, button.offset);
 	}
 	if (button.useText) {
-		drw::Text(button.text.c_str(),button.textData, button.pos, button.fontSize, button.offset, button.textColor);
+		drw::Text(button.text.c_str(), button.textData, button.pos, button.fontSize, button.offset, button.textColor);
 	}
 	button.offset = tempOffset;
 }
