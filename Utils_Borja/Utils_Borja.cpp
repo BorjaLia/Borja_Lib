@@ -35,7 +35,7 @@ bool ctrl::IsMouseDown(ButtonMouse mouseButton)
 	}
 }
 
-bool ctrl::GetKeyDown(Key key)
+bool ctrl::IsKeyHeldDown(Key key)
 {
 	switch (rend::activeGraphics)
 	{
@@ -67,6 +67,8 @@ bool ctrl::GetKeyDown(Key key)
 ctrl::Key ctrl::GetKeyDown()
 {
 
+	ctrl::Key key = ctrl::Key::NULL_KEY;
+
 	switch (rend::activeGraphics)
 	{
 	case rend::GraphicsLib::NONE: {
@@ -79,7 +81,7 @@ ctrl::Key ctrl::GetKeyDown()
 		for (int i = 0; i < (int)ctrl::Key::SIZE; i++)
 		{
 			if (IsKeyDown(i)) {
-				return (ctrl::Key)i;
+				key = (ctrl::Key)i;
 			}
 		}
 #endif
@@ -90,8 +92,9 @@ ctrl::Key ctrl::GetKeyDown()
 #ifdef HAS_SIGIL
 		for (int i = 0; i < (int)ctrl::Key::SIZE; i++)
 		{
+			;
 			if (slGetKey(i)) {
-				return (ctrl::Key)i;
+				key = (ctrl::Key)i;
 			}
 		}
 #endif
@@ -101,7 +104,7 @@ ctrl::Key ctrl::GetKeyDown()
 		break;
 	}
 
-	return ctrl::Key::NULL_KEY;
+	return key;
 }
 
 ctrl::ButtonMouse menuSelectionMouseButton = ctrl::ButtonMouse::LMB;

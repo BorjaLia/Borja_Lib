@@ -154,7 +154,7 @@ namespace ctrl {
 
 	bool IsMouseDown(ButtonMouse mouseButton);
 
-	bool GetKeyDown(Key key);
+	bool IsKeyHeldDown(Key key);
 	Key GetKeyDown();
 
 }

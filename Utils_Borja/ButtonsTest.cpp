@@ -5,7 +5,7 @@ void main() {
 	bool isRunning = true;
 
 	rend::activeGraphics = (rend::GraphicsLib)stoi(utl::SearchInFile("Settings.txt", "graphics"));
-	rend::activeGraphics = (rend::GraphicsLib)2;
+	rend::activeGraphics = (rend::GraphicsLib)1;
 
 	rend::nextGraphics = rend::activeGraphics;
 
@@ -74,6 +74,10 @@ void main() {
 		//btn::Draw(button);
 		btn::Draw(container,buttons,1);
 
+		std::string ball = std::to_string((int)(ctrl::GetKeyDown()));
+
+		drw::Text(ball.c_str(), rend::defaultFont, {0.5,0.5}, 80);
+		
 		drw::End();
 
 		//sounds
