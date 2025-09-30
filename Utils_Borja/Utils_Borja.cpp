@@ -937,6 +937,8 @@ float rend::GetDeltaTime()
 rend::GraphicsLib rend::activeGraphics = rend::GraphicsLib::NONE;
 rend::GraphicsLib rend::nextGraphics = rend::GraphicsLib::NONE;
 
+rend::Resolution rend::activeResolution = rend::Resolution::HD;
+
 float rend::deltaTime = 0;
 
 vec::Vector2 rend::windowSize = { 1600,900 };
@@ -1118,7 +1120,7 @@ bool drw::Sprite(rend::SpriteData sprite, vec::Vector2 pos, vec::Vector2 size, v
 	case rend::GraphicsLib::SIGIL: {
 
 #ifdef HAS_SIGIL
-		slSetForeColor(1, 1, 1, 1);
+		slSetForeColor(color.r / 255, color.g / 255, color.b / 255, color.a / 255);
 		slSprite(sprite.id, pos.x * rend::windowSize.x + offset.x * rend::windowSize.x, pos.y * rend::windowSize.y + offset.y * rend::windowSize.y, size.x * rend::windowSize.x, size.y * rend::windowSize.y);
 #endif
 		break;
