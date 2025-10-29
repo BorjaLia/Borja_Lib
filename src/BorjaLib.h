@@ -39,7 +39,7 @@ namespace ctrl {
 		SIZE
 	};
 
-	enum class Key {
+	enum class Key : int{
 
 		NULL_KEY = 0,
 		APOSTROPHE = 39,
@@ -150,6 +150,12 @@ namespace ctrl {
 		SIZE = 349
 	};
 
+	int ToInt(Key key);
+	int ToInt(ButtonMouse button);
+
+	Key ToKey(int num);
+	ButtonMouse ToButton(int num);
+
 	bool IsMouseDown(ButtonMouse mouseButton);
 	bool IsMousePressed(ButtonMouse mouseButton);
 	ButtonMouse GetMouseButtonDown();
@@ -159,9 +165,9 @@ namespace ctrl {
 	Key GetKeyDown();
 	char LastKeyPressed();										// returns last key press. false if none
 
-	extern ctrl::Key lastKeyPress;
-	extern ctrl::ButtonMouse lastMouseButton;
-	extern ctrl::ButtonMouse menuSelectionMouseButton;
+	extern Key lastKeyPress;
+	extern ButtonMouse lastMouseButton;
+	extern ButtonMouse menuSelectionMouseButton;
 }
 
 namespace utl {
@@ -193,7 +199,6 @@ namespace mth {
 
 	float WrapToRange(float num, float min = 0, float max = 1.0f);
 	float MapToRange(float num, float iMin, float iMax, float oMin, float oMax);
-
 
 	void SetRandomSeed(time_t seed = 0);													// set random seed
 	int GetRandom(int min = 0, int max = 100);												// get random int
@@ -234,7 +239,7 @@ namespace vec {
 		Vector2(float x, float y, bool cartesian = true);
 
 		void normalize();											// normalize the vector
-		vec::Vector2 normalized();									// returns the normalized vector without modyfing the original
+		Vector2 normalized();									// returns the normalized vector without modyfing the original
 		float magnitude();											// returns the magnitude
 		float magnitude(float magnitude);							// scale the vector and returns the new magnitude
 		float determinant(Vector2 v);								// determinant between 2 vectors
@@ -242,9 +247,9 @@ namespace vec {
 		void clamp(float min, float max);							// clamp the magnitude between values
 		float angle(Vector2 v = { 1,0 });							// angle between 2 vectors. default is {1,0}
 		void rotate(float angle);									// rotate the vector by the given angle in radians
-		vec::Vector2 rotated(float angle);							// return the rotated vector by the given angle in radians without modyfing the original
+		Vector2 rotated(float angle);							// return the rotated vector by the given angle in radians without modyfing the original
 		void rotateDegree(float angle);								// rotate the vector by the given angle in degrees
-		vec::Vector2 rotatedDegree(float angle);					// return the rotated vector by the given angle in degrees without modyfing the original
+		Vector2 rotatedDegree(float angle);					// return the rotated vector by the given angle in degrees without modyfing the original
 		void randomizeAngle();											// randomize the direction of the vector. keep magnitude
 		void randomizeAngle(float min,float max);											// randomize the direction of the vector. keep magnitude
 		void randomize(float maxMagnitude);							// randomize the direction of the vector. randomize magnitude between 1 and max
@@ -255,73 +260,73 @@ namespace vec {
 		bool isCircular();
 		bool setAsCircular();
 
-		vec::Vector2 asCircular();									// from cartesian (in radians)
-		vec::Vector2 asCircularDegree();							// from cartesian (in degrees)
-		vec::Vector2 toCircular();									// transform to circular from cartesian (in radians)
-		vec::Vector2 toCircularDegree();							// transform to circular from cartesian (in degrees)
+		Vector2 asCircular();									// from cartesian (in radians)
+		Vector2 asCircularDegree();							// from cartesian (in degrees)
+		Vector2 toCircular();									// transform to circular from cartesian (in radians)
+		Vector2 toCircularDegree();							// transform to circular from cartesian (in degrees)
 
-		vec::Vector2 asCartesian();									// from circular (in radians)
-		vec::Vector2 asCartesianDegree();							// from circular (in degrees)
-		vec::Vector2 toCartesian();									// to cartesian from circular (in radians)
-		vec::Vector2 toCartesianDegree();							// to cartesian from circular (in degrees)
+		Vector2 asCartesian();									// from circular (in radians)
+		Vector2 asCartesianDegree();							// from circular (in degrees)
+		Vector2 toCartesian();									// to cartesian from circular (in radians)
+		Vector2 toCartesianDegree();							// to cartesian from circular (in degrees)
 
-		vec::Vector2 operator + (const vec::Vector2 vector) {
-			return vec::Vector2(x + vector.x, y + vector.y);
+		Vector2 operator + (const Vector2 vector) {
+			return Vector2(x + vector.x, y + vector.y);
 		}
-		vec::Vector2 operator +=  (const vec::Vector2 vector) {
+		Vector2 operator +=  (const Vector2 vector) {
 			this->x += vector.x;
 			this->y += vector.y;
 			return *this;
 		}
-		vec::Vector2 operator - (const vec::Vector2 vector) {
-			return vec::Vector2(x - vector.x, y - vector.y);
+		Vector2 operator - (const Vector2 vector) {
+			return Vector2(x - vector.x, y - vector.y);
 		}
-		vec::Vector2 operator -= (const vec::Vector2 vector) {
+		Vector2 operator -= (const Vector2 vector) {
 			this->x -= vector.x;
 			this->y -= vector.y;
 			return *this;
 		}
-		float operator * (const vec::Vector2 vector) {
+		float operator * (const Vector2 vector) {
 			return (float)((x * vector.x) + (y * vector.y));
 		}
-		vec::Vector2 operator * (const float scalar) {
-			vec::Vector2 result = *this;
+		Vector2 operator * (const float scalar) {
+			Vector2 result = *this;
 			result.x *= scalar;
 			result.y *= scalar;
 			return result;
 		}
-		vec::Vector2 operator * (const int scalar) {
-			vec::Vector2 result = *this;
+		Vector2 operator * (const int scalar) {
+			Vector2 result = *this;
 			result.x *= scalar;
 			result.y *= scalar;
 			return result;
 		}
-		vec::Vector2 operator *= (const float scalar) {
+		Vector2 operator *= (const float scalar) {
 			x *= scalar;
 			y *= scalar;
 			return *this;
 		}
-		vec::Vector2 operator *= (const int scalar) {
+		Vector2 operator *= (const int scalar) {
 			x *= scalar;
 			y *= scalar;
 			return *this;
 		}
-		vec::Vector2 operator = (const vec::Vector2 vector) {
+		Vector2 operator = (const Vector2 vector) {
 			this->x = vector.x;
 			this->y = vector.y;
 			return *this;
 		}
-		vec::Vector2 operator = (const float value) {
+		Vector2 operator = (const float value) {
 			this->x = value;
 			this->y = value;
 			return *this;
 		}
-		vec::Vector2 operator = (const int value) {
+		Vector2 operator = (const int value) {
 			this->x = static_cast<float>(value);
 			this->y = static_cast<float>(value);
 			return *this;
 		}
-		bool operator == (const vec::Vector2 vector) {
+		bool operator == (const Vector2 vector) {
 			if (x == vector.x && y == vector.y) {
 				return true;
 			}
@@ -345,7 +350,7 @@ namespace vec {
 				return false;
 			}
 		}
-		bool operator != (const vec::Vector2 vector) {
+		bool operator != (const Vector2 vector) {
 			if (x == vector.x && y == vector.y) {
 				return false;
 			}
@@ -370,7 +375,8 @@ namespace vec {
 			}
 		}
 	};
-	std::ostream& operator <<(std::ostream& os, const vec::Vector2& v);
+
+	std::ostream& operator <<(std::ostream& os, const Vector2& v);
 }
 
 namespace con {
@@ -460,8 +466,8 @@ namespace rend {
 	void UpdateDeltaTime();
 	void UpdateFramerate();
 
-	extern rend::GraphicsLib activeGraphics;
-	extern rend::GraphicsLib nextGraphics;
+	extern GraphicsLib activeGraphics;
+	extern GraphicsLib nextGraphics;
 
 	extern ctrl::Key frameInfoKey;
 	extern InfoMode frameInfo;
@@ -695,9 +701,6 @@ namespace btn {
 		int clickedUpSoundID = 0;
 		int hoveredSoundID = 0;
 	};
-
-	void InitButtonDefaults();
-	void DeInitButtonDefaults();
 
 	void Init(Button& button);
 	void Init(Button buttons[], int buttonsSize);
