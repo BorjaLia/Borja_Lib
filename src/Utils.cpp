@@ -67,9 +67,10 @@ namespace utl {
 				size_t eqPos = line.find('=');
 				if (eqPos != std::string::npos) {
 					std::string key = line.substr(0, eqPos);
-					while (!key.empty() && key.back() == ' ')
-						key.pop_back();
+					while (!key.empty() && key.back() == ' ') {
 
+						key.pop_back();
+					}
 					if (key == filter) {
 						size_t commentPos = line.find('|', eqPos);
 						if (commentPos != std::string::npos) {
@@ -100,5 +101,4 @@ namespace utl {
 	}
 
 	std::string settingsFilePath = "config/Settings.txt";
-
 }

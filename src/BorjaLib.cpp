@@ -4,13 +4,13 @@ namespace bLib {
 
 	void Init(std::string windowName)
 	{
-		rend::activeGraphics = (rend::GraphicsLib)stoi(utl::SearchInFile(utl::settingsFilePath.c_str(), "graphics"));
+		rend::activeGraphics = rend::ToGraphicsLib(stoi(utl::SearchInFile(utl::settingsFilePath.c_str(), "graphics")));
 		//rend::activeGraphics = (rend::GraphicsLib)1;
 
-		rend::windowSize.x = (float)stoi(utl::SearchInFile(utl::settingsFilePath.c_str(), "resolution_width"));
-		rend::windowSize.y = (float)stoi(utl::SearchInFile(utl::settingsFilePath.c_str(), "resolution_height"));
+		rend::windowSize.x = static_cast<float>(stoi(utl::SearchInFile(utl::settingsFilePath.c_str(), "resolution_width")));
+		rend::windowSize.y = static_cast<float>(stoi(utl::SearchInFile(utl::settingsFilePath.c_str(), "resolution_height")));
 
-		rend::fullscreen = (bool)stoi(utl::SearchInFile(utl::settingsFilePath.c_str(), "fullscreen"));
+		rend::fullscreen = static_cast<bool>(stoi(utl::SearchInFile(utl::settingsFilePath.c_str(), "fullscreen")));
 
 		rend::OpenWindow(rend::windowSize, windowName.c_str(), rend::fullscreen);
 		snd::StartAudioDevice();

@@ -2,6 +2,36 @@
 
 namespace rend {
 
+	int ToInt(WindowType type)
+	{
+		return static_cast<int>(type);
+	}
+
+	WindowType ToWindowType(int num)
+	{
+		return static_cast<WindowType>(num);
+	}
+
+	int ToInt(GraphicsLib lib)
+	{
+		return static_cast<int>(lib);
+	}
+
+	GraphicsLib ToGraphicsLib(int num)
+	{
+		return static_cast<GraphicsLib>(num);
+	}
+
+	int ToInt(InfoMode mode)
+	{
+		return static_cast<int>(mode);
+	}
+
+	InfoMode ToInfoMode(int num)
+	{
+		return static_cast<InfoMode>(num);
+	}
+
 	bool ChangeRenderer()
 	{
 		switch (activeGraphics)
@@ -28,7 +58,7 @@ namespace rend {
 	void OpenWindow(vec::Vector2 size, const char* title, bool fullScreen)
 	{
 		std::string graphics = "NONE";
-		switch ((GraphicsLib)activeGraphics)
+		switch (activeGraphics)
 		{
 		case GraphicsLib::NONE: {
 
@@ -69,7 +99,7 @@ namespace rend {
 
 	bool ShouldExit()
 	{
-		switch ((GraphicsLib)activeGraphics)
+		switch (activeGraphics)
 		{
 		case GraphicsLib::NONE: {
 			return false;
@@ -97,7 +127,7 @@ namespace rend {
 
 	void Close()
 	{
-		switch ((GraphicsLib)activeGraphics)
+		switch (activeGraphics)
 		{
 		case GraphicsLib::NONE: {
 
@@ -135,9 +165,7 @@ namespace rend {
 
 #ifdef HAS_RAYLIB
 
-			size = { (float)GetScreenWidth(),(float)GetScreenHeight() };
-			//utl::Clamp(size.x, 1, (16.0f / 9.0f) * size.y);
-			//utl::Clamp(size.y, 1, (9.0f / 16.0f) * size.x);
+			size = { static_cast<float>(GetScreenWidth()),static_cast<float>(GetScreenHeight()) };
 #endif
 			break;
 		}
@@ -170,15 +198,14 @@ namespace rend {
 		case GraphicsLib::RAYLIB: {
 
 #ifdef HAS_RAYLIB
-			pos = { (float)GetMousePosition().x / windowSize.x,(windowSize.y - (float)GetMousePosition().y) / windowSize.y };
+			pos = { static_cast<float>(GetMousePosition().x) / windowSize.x,(windowSize.y - static_cast<float>(GetMousePosition().y)) / windowSize.y };
 #endif
 			break;
 		}
 		case GraphicsLib::SIGIL: {
 
 #ifdef HAS_SIGIL
-			pos = { (float)slGetMouseX() / windowSize.x,(float)slGetMouseY() / windowSize.y };
-			//return { (float)slGetMouseX() / windowSize.x,(float)slGetMouseY() / windowSize.y };
+			pos = { static_cast<float>(slGetMouseX()) / windowSize.x,static_cast<float>(slGetMouseY()) / windowSize.y };
 #endif
 			break;
 		}

@@ -2,6 +2,16 @@
 
 namespace btn {
 
+	int ToInt(ButtonType type)
+	{
+		return static_cast<int>(type);
+	}
+
+	ButtonType ToButtonType(int num)
+	{
+		return static_cast<ButtonType>(num);
+	}
+
 	void Init(Button& button)
 	{
 		button.isActive = true;

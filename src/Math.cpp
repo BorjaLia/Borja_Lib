@@ -120,10 +120,10 @@ namespace mth {
 	void SetRandomSeed(time_t seed)
 	{
 		if (seed == 0) {
-			srand((unsigned int)time(nullptr));
+			srand(static_cast<unsigned int>(time(nullptr)));
 		}
 		else {
-			srand((unsigned int)time(&seed));
+			srand(static_cast<unsigned int>(time(&seed)));
 		}
 		randomSeedSet = true;
 	}
@@ -141,7 +141,6 @@ namespace mth {
 		if (!randomSeedSet) {
 			SetRandomSeed();
 		}
-		return min + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (max - min)));
+		return min + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (max - min)));
 	}
-
 }

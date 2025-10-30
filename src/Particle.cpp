@@ -27,25 +27,34 @@ namespace prtcl {
 		}
 		particle.amount = activator.amount;
 		particle.pos = activator.pos;
-		particle.pos.x += mth::GetRandomf(0.0f, activator.startingOffset.x) - activator.startingOffset.x / 2.0f;
-		particle.pos.y += mth::GetRandomf(0.0f, activator.startingOffset.y) - activator.startingOffset.y / 2.0f;
+		
+		vec::Vector2 correctedOffset = activator.startingOffset;
+		correctedOffset.x /= rend::windowRatio;
+
+		particle.pos.x += mth::GetRandomf(0.0f, correctedOffset.x) - correctedOffset.x / 2.0f;
+		particle.pos.y += mth::GetRandomf(0.0f, correctedOffset.y) - correctedOffset.y / 2.0f;
+
 		particle.size.x = mth::GetRandomf(activator.minSize.x, activator.maxSize.x);
 		particle.size.y = mth::GetRandomf(activator.minSize.y, activator.maxSize.y);
 		particle.direction = activator.direction;
 		particle.direction.randomizeAngle(0, activator.spread);
 		particle.direction.rotateDegree(-activator.spread / 2);
+		
 		if (activator.startingPosInfluence != 0.0f) {
 			mth::Clamp(activator.startingPosInfluence);
-			particle.direction = particle.direction * (1.0f - activator.startingPosInfluence) + vec::Vector2{ particle.pos - activator.pos }.normalized() * activator.startingPosInfluence;
+			
+			vec::Vector2 diff = particle.pos - activator.pos;
+			diff.x /= rend::windowRatio; // <--- CORRECCIÓN AQUÍ
+
+			particle.direction = particle.direction * (1.0f - activator.startingPosInfluence) + diff.normalized() * activator.startingPosInfluence;
+
+			//particle.direction = particle.direction * (1.0f - activator.startingPosInfluence) + vec::Vector2{ particle.pos - activator.pos }.normalized() * activator.startingPosInfluence;
 			particle.direction.normalize();
 		}
 		particle.lifetime = mth::GetRandomf(activator.lifetime.x, activator.lifetime.y);
 		particle.delay = mth::GetRandomf(activator.delay.x, activator.delay.y);
 		particle.rotationChange = mth::GetRandomf(activator.rotation.x, activator.rotation.y);
 		particle.speed = mth::GetRandomf(activator.speed.x, activator.speed.y);
-
-		particle.size.x /= rend::windowRatio;
-		particle.direction.x /= rend::windowRatio;
 	}
 
 	bool Update(ParticleData& particle)
@@ -53,7 +62,18 @@ namespace prtcl {
 		if (particle.active) {
 
 			if (particle.alive) {
-				particle.pos += particle.direction * particle.speed * rend::deltaTime;
+				//particle.pos += particle.direction * particle.speed * rend::deltaTime;
+
+				// --- CORRECCIÓN DE MOVIMIENTO ---
+			// Calculamos el delta de movimiento (una magnitud)
+				vec::Vector2 delta = particle.direction * particle.speed * rend::deltaTime;
+
+				// Corregimos el componente .x
+				delta.x /= rend::windowRatio; // <--- CORRECCIÓN AQUÍ
+
+				// Aplicamos el delta corregido
+				particle.pos += delta;
+				// --- FIN CORRECCIÓN ---
 				particle.lifetime -= rend::deltaTime;
 			}
 			if (particle.delay > 0.0f) {

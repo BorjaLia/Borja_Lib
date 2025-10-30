@@ -7,7 +7,7 @@ namespace snd {
 
 	void StartAudioDevice()
 	{
-		switch ((rend::GraphicsLib)rend::activeGraphics)
+		switch (rend::activeGraphics)
 		{
 		case rend::GraphicsLib::NONE: {
 
@@ -34,7 +34,7 @@ namespace snd {
 
 	void EndAudioDevice()
 	{
-		switch ((rend::GraphicsLib)rend::activeGraphics)
+		switch (rend::activeGraphics)
 		{
 		case rend::GraphicsLib::NONE: {
 
@@ -79,7 +79,7 @@ namespace snd {
 		}
 		audioData.active = true;
 
-		switch ((rend::GraphicsLib)rend::activeGraphics)
+		switch (rend::activeGraphics)
 		{
 		case rend::GraphicsLib::NONE: {
 
@@ -109,7 +109,7 @@ namespace snd {
 
 	void DeInit(AudioData& audioData)
 	{
-		switch ((rend::GraphicsLib)rend::activeGraphics)
+		switch (rend::activeGraphics)
 		{
 		case rend::GraphicsLib::NONE: {
 
@@ -140,7 +140,7 @@ namespace snd {
 	void Play(int id)
 	{
 
-		switch ((rend::GraphicsLib)rend::activeGraphics)
+		switch (rend::activeGraphics)
 		{
 		case rend::GraphicsLib::NONE: {
 
@@ -167,7 +167,7 @@ namespace snd {
 
 	void Pause(int id, bool pause)
 	{
-		switch ((rend::GraphicsLib)rend::activeGraphics)
+		switch (rend::activeGraphics)
 		{
 		case rend::GraphicsLib::NONE: {
 
@@ -204,7 +204,7 @@ namespace snd {
 
 	void Stop(int id)
 	{
-		switch ((rend::GraphicsLib)rend::activeGraphics)
+		switch (rend::activeGraphics)
 		{
 		case rend::GraphicsLib::NONE: {
 
@@ -230,7 +230,7 @@ namespace snd {
 
 	bool IsPlaying(int id)
 	{
-		switch ((rend::GraphicsLib)rend::activeGraphics)
+		switch (rend::activeGraphics)
 		{
 		case rend::GraphicsLib::NONE: {
 
@@ -255,5 +255,4 @@ namespace snd {
 		}
 		return false;
 	}
-
 }

@@ -3,7 +3,8 @@
 namespace drw {
 
 	SpriteData defaultSprite;
-	SpriteData spriteDataList[spriteDataMaxAmount] = {};
+	//SpriteData spriteDataList[spriteDataMaxAmount] = {};
+	std::vector<SpriteData> spriteDataList;
 
 	FontData defaultFont;
 	FontData fontDataList[fontDataMaxAmount] = {};
@@ -16,7 +17,7 @@ namespace drw {
 
 	void Clear(bColor color)
 	{
-		switch ((rend::GraphicsLib)rend::activeGraphics)
+		switch (rend::activeGraphics)
 		{
 		case rend::GraphicsLib::NONE: {
 
@@ -43,25 +44,25 @@ namespace drw {
 
 	int InitSpriteData(SpriteData& spriteData)
 	{
-		int availableID = 0;
-		int currentID = -1;
+		//int availableID = 0;
+		//int currentID = -1;
 
-		bool isAvailable = false;
-		while (!isAvailable) {
-			currentID++;
+		//bool isAvailable = false;
+		//while (!isAvailable) {
+		//	currentID++;
 
-			isAvailable = !spriteDataList[currentID].active;
+		//	isAvailable = !spriteDataList[currentID].active;
 
-			if (isAvailable) {
-				availableID = currentID;
-			}
-			if (currentID == spriteDataMaxAmount - 1) {
-				isAvailable = true;
-			}
-		}
+		//	if (isAvailable) {
+		//		availableID = currentID;
+		//	}
+		//	if (currentID == spriteDataMaxAmount - 1) {
+		//		isAvailable = true;
+		//	}
+		//}
 		spriteData.active = true;
 
-		switch ((rend::GraphicsLib)rend::activeGraphics)
+		switch (rend::activeGraphics)
 		{
 		case rend::GraphicsLib::NONE: {
 
@@ -70,7 +71,10 @@ namespace drw {
 		case rend::GraphicsLib::RAYLIB: {
 
 #ifdef HAS_RAYLIB
-			spriteData.id = LoadTexture(spriteData.file.c_str()).id;
+			Texture texture = LoadTexture(spriteData.file.c_str());
+			spriteData.id = texture.id;
+			spriteData.resolution.x = static_cast<float>(texture.width);
+			spriteData.resolution.y = static_cast<float>(texture.height);
 #endif
 			break;
 		}
@@ -78,6 +82,7 @@ namespace drw {
 
 #ifdef HAS_SIGIL
 			spriteData.id = slLoadTexture(spriteData.file.c_str());
+
 #endif
 			break;
 		}
@@ -85,13 +90,14 @@ namespace drw {
 			break;
 		}
 
-		spriteDataList[availableID] = spriteData;
+		//spriteDataList[availableID] = spriteData;
+		int availableID = static_cast<int>(spriteDataList.size()) - 1;
 		return availableID;
 	}
 
 	bool DeInitSpriteData(SpriteData& spriteData)
 	{
-		switch ((rend::GraphicsLib)rend::activeGraphics)
+		switch (rend::activeGraphics)
 		{
 		case rend::GraphicsLib::NONE: {
 
@@ -166,7 +172,7 @@ namespace drw {
 		}
 		fontData.active = true;
 
-		switch ((rend::GraphicsLib)rend::activeGraphics)
+		switch (rend::activeGraphics)
 		{
 		case rend::GraphicsLib::NONE: {
 
@@ -196,7 +202,7 @@ namespace drw {
 
 	void Begin()
 	{
-		switch ((rend::GraphicsLib)rend::activeGraphics)
+		switch (rend::activeGraphics)
 		{
 		case rend::GraphicsLib::NONE: {
 
@@ -290,7 +296,7 @@ namespace drw {
 			break;
 		}
 
-		switch ((rend::GraphicsLib)rend::activeGraphics)
+		switch (rend::activeGraphics)
 		{
 		case rend::GraphicsLib::NONE: {
 
@@ -327,14 +333,15 @@ namespace drw {
 
 		//std::cout << "Frame: " << animation.id + ((int)(((rend::secondCounter - animation.timeOffset) / animation.duration) * animation.frames)) << '\n';
 
-		Sprite(spriteDataList[animation.id + ((int)(((rend::secondCounter - animation.timeOffset) / animation.duration) * animation.frames))], pos, size, offset, color);
+		Sprite(spriteDataList[animation.id + (static_cast<int>((((rend::secondCounter - animation.timeOffset) / animation.duration) * animation.frames)))], pos, size, offset, color);
 
 		return true;
 	}
 
 	bool Sprite(SpriteData sprite, vec::Vector2 pos, vec::Vector2 size, vec::Vector2 offset, bColor color)
 	{
-		if (sprite.id == 0) {
+		//if (sprite.id == 0) {
+		if (!sprite.active || sprite.id <= 0) {
 			return false;
 		}
 
@@ -347,24 +354,72 @@ namespace drw {
 		case rend::GraphicsLib::RAYLIB: {
 
 #ifdef HAS_RAYLIB
-			Texture2D texture;
+
+			// --- BORRAR TODO LO ANTIGUO (DrawTexture, DrawTextureEx) ---
+		// El código comentado que tenías aquí era una mezcla de ideas.
+		// Esta es la implementación limpia y final:
+
+		// <--- CORRECCIÓN CON DRAWTEXTUREPRO ---
+
+		// 1. Definimos la textura a usar (¡inicializada a {}!)
+			Texture2D texture = {};
 			texture.id = sprite.id;
-			texture.width = static_cast<int>(size.x * rend::windowSize.x);
-			texture.height = static_cast<int>(size.y * rend::windowSize.y);
 
-			if (rend::pixelMode) {
-				SetTextureFilter(texture, TEXTURE_FILTER_POINT);
-			}
+			// 2. Definimos el rectángulo de ORIGEN (Source)
+			//    Esto le dice a Raylib que use la textura COMPLETA.
+			vec::Vector4 sourceRec = {
+				0.0f,
+				0.0f,
+				sprite.resolution.x,
+				sprite.resolution.y
+			};
 
-			DrawTexture(texture, static_cast<int>(pos.x * rend::windowSize.x + offset.x * rend::windowSize.x - rend::windowSize.x * size.x / 2.0f), static_cast<int>(rend::windowSize.y * (1.0f - pos.y) + (1.0f - offset.y * rend::windowSize.y) - rend::windowSize.y * size.y / 2.0f), { color.r,color.g,color.b,color.a });
+			// 3. Calculamos el tamaño en PÍXELES (corregido con aspect ratio)
+			//    Usamos 'windowSize.y' para AMBOS ejes.
+			float pixelWidth = size.x * rend::windowSize.y;
+			float pixelHeight = size.y * rend::windowSize.y;
+			float pixelOffsetX = offset.x * rend::windowSize.y;
+			float pixelOffsetY = offset.y * rend::windowSize.y;
+
+			// 4. Calculamos la posición en PÍXELES (respetando aspect ratio)
+			//    La posición 'x' usa 'windowSize.x'
+			//    La posición 'y' usa 'windowSize.y'
+			float pixelPosX = pos.x * rend::windowSize.x;
+			float pixelPosY = rend::windowSize.y * (1.0f - pos.y); // Tu Y-inversa
+
+			// 5. Definimos el rectángulo de DESTINO (Dest)
+			//    Esta es la posición y tamaño final en la pantalla.
+			//    Usamos tu lógica de origen en el centro (restando size/2).
+			vec::Vector4 destRec = {
+				pixelPosX + pixelOffsetX - pixelWidth / 2.0f,
+				pixelPosY - pixelOffsetY - pixelHeight / 2.0f, // (Tu Y-inversa para pos, Y-normal para offset)
+				pixelWidth,
+				pixelHeight
+			};
+
+			// 6. Definimos el ORIGEN de dibujado (para rotación)
+			//    Como ya calculamos el 'destRec' con el centro, el origen es (0,0)
+			Vector2 origin = { 0.0f, 0.0f };
+
+			// 8. Dibujar
+			DrawTexturePro(texture, { sourceRec.x,sourceRec.y,sourceRec.z,sourceRec.w }, { destRec.x,destRec.y,destRec.z,destRec.w }, origin, 0.0f, { color.r,color.g,color.b,color.a });
 #endif
 			break;
 		}
 		case rend::GraphicsLib::SIGIL: {
 
 #ifdef HAS_SIGIL
+			//slSetForeColor(static_cast<double>(color.r / 255.0f), static_cast<double>(color.g / 255.0f), static_cast<double>(color.b / 255.0f), static_cast<double>(color.a / 255.0f));
+			//slSprite(sprite.id, pos.x * rend::windowSize.x + offset.x * rend::windowSize.x, pos.y * rend::windowSize.y + offset.y * rend::windowSize.y, size.x * rend::windowSize.x, size.y * rend::windowSize.y);
+
 			slSetForeColor(static_cast<double>(color.r / 255.0f), static_cast<double>(color.g / 255.0f), static_cast<double>(color.b / 255.0f), static_cast<double>(color.a / 255.0f));
-			slSprite(sprite.id, pos.x * rend::windowSize.x + offset.x * rend::windowSize.x, pos.y * rend::windowSize.y + offset.y * rend::windowSize.y, size.x * rend::windowSize.x, size.y * rend::windowSize.y);
+			slSprite(
+				sprite.id,
+				pos.x * rend::windowSize.x + offset.x * rend::windowSize.y, // <--- 'y' aquí
+				pos.y * rend::windowSize.y + offset.y * rend::windowSize.y,
+				size.x * rend::windowSize.y, // <--- 'y' aquí
+				size.y * rend::windowSize.y
+			);
 #endif
 			break;
 		}
@@ -374,9 +429,11 @@ namespace drw {
 		return true;
 	}
 
-	void Text(const char* text, TextData& textData, vec::Vector2 pos, int fontSize, vec::Vector2 offset, bColor color)
+	void Text(const char* text, TextData& textData, vec::Vector2 pos, float fontSize, vec::Vector2 offset, bColor color)
 	{
-		vec::Vector2 textSize = fontSize;
+		//vec::Vector2 textSize = fontSize;
+
+		float pixelFontSize = fontSize * rend::windowSize.y; // <--- CORRECCIÓN AQUÍ
 
 		switch (rend::activeGraphics)
 		{
@@ -385,22 +442,63 @@ namespace drw {
 			break;
 		}
 		case rend::GraphicsLib::RAYLIB: {
-			textSize.x = MeasureText(text, fontSize) / rend::windowSize.x;
-			float tempFontSize = fontSize * 1.5f;
-			textSize.y = tempFontSize / rend::windowSize.y;
-			DrawTextPro(fontDataList[textData.fontID].font, text, { pos.x * rend::windowSize.x + offset.x * rend::windowSize.x - rend::windowSize.x * textSize.x / 3, rend::windowSize.y * (1.0f - pos.y) + (1.0f - offset.y * rend::windowSize.y) - rend::windowSize.y * textSize.y / 2 }, { textData.origin.x,textData.origin.y }, textData.rotation, tempFontSize, fontDataList[textData.fontID].spacing, { color.r,color.g,color.b,color.a });
+			//textSize.x = MeasureText(text, fontSize) / rend::windowSize.x;
+			//float tempFontSize = fontSize * 1.5f;
+			//textSize.y = tempFontSize / rend::windowSize.y;
+			//DrawTextPro(fontDataList[textData.fontID].font, text, { pos.x * rend::windowSize.x + offset.x * rend::windowSize.x - rend::windowSize.x * textSize.x / 3, rend::windowSize.y * (1.0f - pos.y) + (1.0f - offset.y * rend::windowSize.y) - rend::windowSize.y * textSize.y / 2 }, { textData.origin.x,textData.origin.y }, textData.rotation, tempFontSize, fontDataList[textData.fontID].spacing, { color.r,color.g,color.b,color.a });
+
+// 2. Medir en píxeles
+			Vector2 pixelTextSize = MeasureTextEx(fontDataList[textData.fontID].font, text, pixelFontSize, fontDataList[textData.fontID].spacing);
+
+			// 3. Calcular posición en píxeles (corregido)
+			vec::Vector2 pixelPos = { pos.x * rend::windowSize.x, rend::windowSize.y * (1.0f - pos.y) }; // Tu Y-inversa
+			vec::Vector2 pixelOffset = { offset.x * rend::windowSize.y, offset.y * rend::windowSize.y }; // <--- CORRECCIÓN AQUÍ
+
+			// 4. Calcular punto de dibujado (asumiendo centro)
+			Vector2 drawPos = {
+				pixelPos.x + pixelOffset.x - pixelTextSize.x / 2.0f,
+				pixelPos.y - pixelOffset.y - pixelTextSize.y / 2.0f // Asumiendo Y-inversa
+			};
+
+			DrawTextPro(
+				fontDataList[textData.fontID].font,
+				text,
+				drawPos, // Posición calculada
+				{ textData.origin.x,textData.origin.y }, // Origen (probablemente 0,0 si centramos manualmente)
+				textData.rotation,
+				pixelFontSize, // Tamaño en píxeles
+				fontDataList[textData.fontID].spacing,
+				{ color.r,color.g,color.b,color.a }
+			);
 			break;
 		}
 		case rend::GraphicsLib::SIGIL: {
 
-			slSetFont(textData.fontID, fontSize);
-			slSetFontSize(fontSize);
+			//slSetFont(textData.fontID, fontSize);
+			//slSetFontSize(fontSize);
+			//slSetForeColor(static_cast<double>(color.r / 255.0f), static_cast<double>(color.g / 255.0f), static_cast<double>(color.b / 255.0f), static_cast<double>(color.a / 255.0f));
+			//textSize.x = static_cast<float>(slGetTextWidth(text)) / rend::windowSize.x;
+			//textSize.y = static_cast<float>(slGetTextHeight(text)) / rend::windowSize.y;
+			//slText(pos.x * rend::windowSize.x + offset.x * rend::windowSize.x - rend::windowSize.x * textSize.x / 2, rend::windowSize.y * pos.y + offset.y * rend::windowSize.y - rend::windowSize.y * textSize.y / 2, text);
+
+			slSetFont(textData.fontID, static_cast<int>(pixelFontSize)); // Usar tamaño en píxeles
+			slSetFontSize(static_cast<int>(pixelFontSize));
 			slSetForeColor(static_cast<double>(color.r / 255.0f), static_cast<double>(color.g / 255.0f), static_cast<double>(color.b / 255.0f), static_cast<double>(color.a / 255.0f));
-			textSize.x = static_cast<float>(slGetTextWidth(text)) / rend::windowSize.x;
-			textSize.y = static_cast<float>(slGetTextHeight(text)) / rend::windowSize.y;
-			//slSetTextAlign(SL_ALIGN_CENTER);
-			//slText(pos.x * rend::windowSize.x + offset.x * rend::windowSize.x, rend::windowSize.y * (1.0f - pos.y) + offset.y * rend::windowSize.y, text);
-			slText(pos.x * rend::windowSize.x + offset.x * rend::windowSize.x - rend::windowSize.x * textSize.x / 2, rend::windowSize.y * pos.y + offset.y * rend::windowSize.y - rend::windowSize.y * textSize.y / 2, text);
+
+			// 2. Medir en píxeles
+			float pixelWidth = static_cast<float>(slGetTextWidth(text));
+			float pixelHeight = static_cast<float>(slGetTextHeight(text));
+
+			// 3. Calcular posición en píxeles (corregido)
+			float pixelPosX = pos.x * rend::windowSize.x + offset.x * rend::windowSize.y; // <--- 'y' aquí
+			float pixelPosY = pos.y * rend::windowSize.y + offset.y * rend::windowSize.y;
+
+			// 4. Dibujar (centrado)
+			slText(
+				pixelPosX - pixelWidth / 2.0f,
+				pixelPosY - pixelHeight / 2.0f,
+				text
+			);
 			break;
 		}
 		default:
@@ -408,13 +506,13 @@ namespace drw {
 		}
 	}
 
-	void Text(const char* text, vec::Vector2 pos, int fontSize, vec::Vector2 offset, bColor color)
+	void Text(const char* text, vec::Vector2 pos, float fontSize, vec::Vector2 offset, bColor color)
 	{
 		TextData textData;
 		Text(text, textData, pos, fontSize, offset, color);
 	}
 
-	void Text(TextData& textData, vec::Vector2 pos, int fontSize, vec::Vector2 offset, bColor color)
+	void Text(TextData& textData, vec::Vector2 pos, float fontSize, vec::Vector2 offset, bColor color)
 	{
 		Text(textData.text.c_str(), textData, pos, fontSize, offset, color);
 	}
@@ -454,15 +552,28 @@ namespace drw {
 		case rend::GraphicsLib::RAYLIB: {
 
 #ifdef HAS_RAYLIB
-			DrawRectangle(static_cast<int>(pos.x * rend::windowSize.x + offset.x * rend::windowSize.x - rend::windowSize.x * size.x / 2.0f), static_cast<int>(rend::windowSize.y * (1.0f - pos.y) + (1.0f - offset.y * rend::windowSize.y) - rend::windowSize.y * size.y / 2.0f), static_cast<int>(size.x * rend::windowSize.x), static_cast<int>(size.y * rend::windowSize.y), { color.r,color.g,color.b,color.a });
+			//DrawRectangle(static_cast<int>(pos.x * rend::windowSize.x + offset.x * rend::windowSize.x - rend::windowSize.x * size.x / 2.0f), static_cast<int>(rend::windowSize.y * (1.0f - pos.y) + (1.0f - offset.y * rend::windowSize.y) - rend::windowSize.y * size.y / 2.0f), static_cast<int>(size.x * rend::windowSize.x), static_cast<int>(size.y * rend::windowSize.y), { color.r,color.g,color.b,color.a });
+			DrawRectangle(
+				static_cast<int>(pos.x * rend::windowSize.x + offset.x * rend::windowSize.y - rend::windowSize.y * size.x / 2.0f), // <--- 'y' aquí y aquí
+				static_cast<int>(rend::windowSize.y * (1.0f - pos.y) + (1.0f - offset.y * rend::windowSize.y) - rend::windowSize.y * size.y / 2.0f), // (Tu lógica de Y-inversa)
+				static_cast<int>(size.x * rend::windowSize.y), // <--- 'y' aquí
+				static_cast<int>(size.y * rend::windowSize.y),
+				{ color.r,color.g,color.b,color.a });
 #endif
 			break;
 		}
 		case rend::GraphicsLib::SIGIL: {
 
 #ifdef HAS_SIGIL
+			//slSetForeColor(static_cast<double>(color.r / 255.0f), static_cast<double>(color.g / 255.0f), static_cast<double>(color.b / 255.0f), static_cast<double>(color.a / 255.0f));
+			//slRectangleFill(pos.x * rend::windowSize.x + offset.x * rend::windowSize.x, pos.y * rend::windowSize.y + offset.y * rend::windowSize.y, size.x * rend::windowSize.x, size.y * rend::windowSize.y);
 			slSetForeColor(static_cast<double>(color.r / 255.0f), static_cast<double>(color.g / 255.0f), static_cast<double>(color.b / 255.0f), static_cast<double>(color.a / 255.0f));
-			slRectangleFill(pos.x * rend::windowSize.x + offset.x * rend::windowSize.x, pos.y * rend::windowSize.y + offset.y * rend::windowSize.y, size.x * rend::windowSize.x, size.y * rend::windowSize.y);
+			slRectangleFill(
+				pos.x * rend::windowSize.x + offset.x * rend::windowSize.y, // <--- 'y' aquí
+				pos.y * rend::windowSize.y + offset.y * rend::windowSize.y,
+				size.x * rend::windowSize.y, // <--- 'y' aquí
+				size.y * rend::windowSize.y
+			);
 #endif
 			break;
 		}
@@ -533,76 +644,4 @@ namespace drw {
 			break;
 		}
 	}
-
-	//void ButtonClick(btn::ButtonClick button)
-	//{
-	//
-	//	switch (button.type)
-	//	{
-	//	case btn::Type::Normal: {
-	//		if (button.beingHeld) {
-	//			button.offset += button.clickedOffset * button.size.y;
-	//		}
-	//		if (button.useSprite) {
-	//			Sprite(button.activeSprite, button.pos, button.size, button.offset);
-	//		}
-	//		else {
-	//			Rectangle(button.pos, button.size, button.activeColor, button.offset);
-	//			Text(button.text.c_str(), button.pos, button.fontSize, button.offset, button.textColor);
-	//		}
-	//		break;
-	//	}
-	//	case btn::Type::Checkbox: {
-	//
-	//		if (button.beingHeld) {
-	//			button.offset += button.clickedOffset * button.size.y;
-	//		}
-	//		if (button.value) {
-	//			button.text = "X";
-	//		}
-	//		else {
-	//			button.text = "";
-	//		}
-	//
-	//		if (button.useSprite) {
-	//			Sprite(button.activeSprite, button.pos, button.size, button.offset);
-	//		}
-	//		else {
-	//			Rectangle(button.pos, button.size, button.activeColor, button.offset);
-	//			Text(button.text.c_str(), button.pos, button.fontSize, button.offset, button.textColor);
-	//		}
-	//		break;
-	//	}
-	//	case btn::Type::Slider: {
-	//		if (button.useSprite) {
-	//			Sprite(button.activeSprite, button.pos, button.size, button.offset);
-	//		}
-	//		else {
-	//			Rectangle(button.pos, button.size, button.activeColor, button.offset);
-	//			Rectangle(button.pos, { button.size.x * 8 / 10,button.size.y / 3 }, button.textColor, button.offset);
-	//		}
-	//		break;
-	//	}
-	//	case btn::Type::DropDown: {
-	//
-	//		break;
-	//	}
-	//	case btn::Type::Selector: {
-	//
-	//		break;
-	//	}
-	//	default:
-	//		break;
-	//	}
-	//}
-
-	//void Container(btn::Container container, btn::ButtonClick buttons[], int buttonsSize)
-	//{
-	//	for (int i = 0; i < buttonsSize; i++)
-	//	{
-	//		ButtonClick(buttons[i]);
-	//	}
-	//}
-
-
 }

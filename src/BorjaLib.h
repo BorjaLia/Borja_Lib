@@ -6,6 +6,7 @@
 
 #include <fstream>
 #include <string>
+#include <vector>
 
 #define HAS_SIGIL
 #define HAS_RAYLIB
@@ -206,6 +207,23 @@ namespace mth {
 }
 
 namespace vec {
+
+	struct Vector4 {
+	private:
+
+		bool isCartesianBool = true;
+		bool isSphericalBool = false;
+
+	public:
+
+		float x;
+		float y;
+		float z;
+		float w;
+
+		Vector4(bool cartesian = true);
+		Vector4(float x, float y, float z,float w, bool cartesian = true);
+	};
 
 	struct Vector3 {
 	private:
@@ -442,17 +460,26 @@ namespace rend {
 		FULLSCREEN
 	};
 
+	int ToInt(WindowType type);
+	WindowType ToWindowType(int num);
+
 	enum class GraphicsLib {
 		NONE,
 		RAYLIB,
 		SIGIL
 	};
 
+	int ToInt(GraphicsLib lib);
+	GraphicsLib ToGraphicsLib(int num);
+
 	enum class InfoMode {
 		NONE,
 		BASIC,
 		ADVANCED
 	};
+
+	int ToInt(InfoMode mode);
+	InfoMode ToInfoMode(int num);
 
 	bool ChangeRenderer();
 
@@ -519,6 +546,8 @@ namespace drw {
 		std::string name = "Sprite";
 		std::string file = "res/sprites/NoTexture.png";
 
+		vec::Vector2 resolution = { 0,0 };
+		
 		vec::Vector2 size = { 0,0 };
 		vec::Vector2 offset = { 0,0 };
 	};
@@ -526,8 +555,9 @@ namespace drw {
 	extern SpriteData defaultSprite;
 
 	const int spriteDataMaxAmount = 100;
-	extern SpriteData spriteDataList[spriteDataMaxAmount];
-
+	//extern SpriteData spriteDataList[spriteDataMaxAmount];
+	extern std::vector<SpriteData> spriteDataList;
+	
 	struct AnimationData {
 
 		bool active = false;
@@ -563,7 +593,7 @@ namespace drw {
 		int fontID = 0;
 
 		std::string text = "text";
-		int fontSize = 50;
+		float fontSize = 0.1f;
 
 		vec::Vector2 size = { 0,0 };
 		vec::Vector2 origin = { 0,0 };
@@ -586,9 +616,9 @@ namespace drw {
 
 	bool Animation(AnimationData& animation, vec::Vector2 pos = { 0,0 }, vec::Vector2 size = { 0,0 }, vec::Vector2 offset = { 0,0 }, bColor color = WHITE_B);
 	bool Sprite(SpriteData sprite, vec::Vector2 pos = { 0,0 }, vec::Vector2 size = { 0,0 }, vec::Vector2 offset = { 0,0 }, bColor color = WHITE_B);
-	void Text(const char* text, TextData& textData, vec::Vector2 pos = { 0,0 }, int fontSize = 10, vec::Vector2 offset = { 0,0 }, bColor color = WHITE_B);
-	void Text(const char* text, vec::Vector2 pos = { 0,0 }, int fontSize = 10, vec::Vector2 offset = { 0,0 }, bColor color = WHITE_B);
-	void Text(TextData& textData, vec::Vector2 pos = { 0,0 }, int fontSize = 10, vec::Vector2 offset = { 0,0 }, bColor color = WHITE_B);
+	void Text(const char* text, TextData& textData, vec::Vector2 pos = { 0,0 }, float fontSize = 0.1f, vec::Vector2 offset = { 0,0 }, bColor color = WHITE_B);
+	void Text(const char* text, vec::Vector2 pos = { 0,0 }, float fontSize = 0.1f, vec::Vector2 offset = { 0,0 }, bColor color = WHITE_B);
+	void Text(TextData& textData, vec::Vector2 pos = { 0,0 }, float fontSize = 0.1f, vec::Vector2 offset = { 0,0 }, bColor color = WHITE_B);
 	void Triangle(vec::Vector2 p1, vec::Vector2 p2, vec::Vector2 p3, bColor color = WHITE_B);
 	void Rectangle(vec::Vector2 pos, vec::Vector2 size, bColor color = WHITE_B, vec::Vector2 offset = { 0,0 });
 	void Circle(vec::Vector2 pos, vec::Vector2 size, bColor color = WHITE_B);
@@ -628,6 +658,17 @@ namespace snd {
 
 namespace btn {
 
+	enum class ButtonType {
+			NORMAL,
+			CHECKBOX,
+			SLIDER,
+			INPUT,
+			AMOUNT
+	};
+
+	int ToInt(ButtonType type);
+	ButtonType ToButtonType(int num);
+
 	struct Container {
 
 		vec::Vector2 pos;
@@ -648,6 +689,10 @@ namespace btn {
 		// active
 		bool isActive = false;
 		bool isRendered = true;
+
+		//type
+
+		ButtonType type = ButtonType::NORMAL;
 
 		//signal
 
@@ -733,6 +778,8 @@ namespace prtcl {
 
 		bool animated = false;
 		
+		float followActivatorStrength = 0.0f;
+
 		float startingPosInfluence = 0.0f;
 
 		drw::AnimationData animation;
