@@ -15,6 +15,24 @@ namespace bLib {
 		rend::OpenWindow(rend::windowSize, windowName.c_str(), rend::fullscreen);
 		snd::StartAudioDevice();
 
+		// 1. Limpiamos el vector de sprites por si acaso
+		drw::spriteDataList.clear();
+
+		// 2. Creamos y cargamos el sprite por defecto
+		drw::SpriteData defaultSprite = {};
+		defaultSprite.file = "res/sprites/NoTexture.png"; // Ruta a tu sprite por defecto
+		defaultSprite.size = { 0.1f, 0.1f };
+
+		// IMPORTANTE: Si usas Sigil, setea la resolución manualmente
+		if (rend::activeGraphics == rend::GraphicsLib::SIGIL) {
+			// ¡Debes poner la resolución real de "NoTexture.png" aquí!
+			// defaultSprite.resolution = { 64.0f, 64.0f }; 
+		}
+
+		// 3. Llamamos a InitSpriteData.
+		//    Esto pondrá el defaultSprite en 'spriteDataList[0]'
+		// <--- FIN CORRECCIÓN ---
+
 		drw::InitSpriteData(drw::defaultSprite);
 		drw::InitFontData(drw::defaultFont);
 		snd::InitAudioData(snd::defaultAudio);

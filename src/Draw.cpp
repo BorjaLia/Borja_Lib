@@ -42,57 +42,46 @@ namespace drw {
 		}
 	}
 
-	int InitSpriteData(SpriteData& spriteData)
+	int drw::InitSpriteData(SpriteData& spriteData)
 	{
-		//int availableID = 0;
-		//int currentID = -1;
+		// 1. Añade una copia del spriteData al final del vector
+		spriteDataList.push_back(spriteData);
 
-		//bool isAvailable = false;
-		//while (!isAvailable) {
-		//	currentID++;
+		// 2. El nuevo ID es el índice de ese elemento
+		int newID = static_cast<int>(spriteDataList.size()) - 1;
 
-		//	isAvailable = !spriteDataList[currentID].active;
+		// 3. Obtenemos una referencia al sprite DENTRO del vector
+		//    para poder modificarlo (cargarle el ID y la resolución)
+		SpriteData& newSpriteInVector = spriteDataList[newID];
+		newSpriteInVector.active = true;
 
-		//	if (isAvailable) {
-		//		availableID = currentID;
-		//	}
-		//	if (currentID == spriteDataMaxAmount - 1) {
-		//		isAvailable = true;
-		//	}
-		//}
-		spriteData.active = true;
-
+		// 4. Cargamos la textura real
 		switch (rend::activeGraphics)
 		{
-		case rend::GraphicsLib::NONE: {
-
-			break;
-		}
 		case rend::GraphicsLib::RAYLIB: {
-
 #ifdef HAS_RAYLIB
-			Texture texture = LoadTexture(spriteData.file.c_str());
-			spriteData.id = texture.id;
-			spriteData.resolution.x = static_cast<float>(texture.width);
-			spriteData.resolution.y = static_cast<float>(texture.height);
+			Texture texture = LoadTexture(newSpriteInVector.file.c_str());
+			newSpriteInVector.id = texture.id;
+			newSpriteInVector.resolution.x = static_cast<float>(texture.width);
+			newSpriteInVector.resolution.y = static_cast<float>(texture.height);
 #endif
 			break;
 		}
 		case rend::GraphicsLib::SIGIL: {
-
 #ifdef HAS_SIGIL
-			spriteData.id = slLoadTexture(spriteData.file.c_str());
-
+			newSpriteInVector.id = slLoadTexture(newSpriteInVector.file.c_str());
+			// Como dijimos, la resolución para Sigil debe venir
+			// pre-configurada en el 'spriteData' que se pasó como parámetro.
+			if (newSpriteInVector.resolution.x == 0) {
+				// Opcional: poner un 'log' de advertencia
+			}
 #endif
 			break;
 		}
-		default:
-			break;
+									 // ...
 		}
 
-		//spriteDataList[availableID] = spriteData;
-		int availableID = static_cast<int>(spriteDataList.size()) - 1;
-		return availableID;
+		return newID;
 	}
 
 	bool DeInitSpriteData(SpriteData& spriteData)
