@@ -98,9 +98,11 @@ namespace coll {
 			closest.y = pos1.y + size1.y / 2.0f;
 		}
 
-		vec::Vector2 distance = pos2 - distance;
+		vec::Vector2 distance = pos2 - closest;
 
 		float distanceSquared = (distance.x * distance.x) + (distance.y * distance.y);
+
+		point = closest + distance * 0.5f;
 
 		return distanceSquared <= (size2.x * size2.x);
 	}
