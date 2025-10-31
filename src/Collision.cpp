@@ -80,10 +80,30 @@ namespace coll {
 	//	return false;
 	//}
 	//
-	//bool RecOnCircle(vec::Vector2 pos1, vec::Vector2 size1, vec::Vector2 pos2, vec::Vector2 size2, vec::Vector2& point)
-	//{
-	//	return false;
-	//}
+	bool RecOnCircle(vec::Vector2 pos1, vec::Vector2 size1, vec::Vector2 pos2, vec::Vector2 size2, vec::Vector2& point)
+	{
+		vec::Vector2 closest = pos2;
+
+		if (pos2.x < pos1.x - size1.x / 2.0f) {
+			closest.x = pos1.x - size1.x / 2.0f;
+		}
+		if (pos2.x > pos1.x + size1.x / 2.0f) {
+			closest.x = pos1.x + size1.x / 2.0f;
+		}
+
+		if (pos2.y < pos1.y - size1.y / 2.0f) {
+			closest.y = pos1.y - size1.y / 2.0f;
+		}
+		if (pos2.y > pos1.y + size1.y / 2.0f) {
+			closest.y = pos1.y + size1.y / 2.0f;
+		}
+
+		vec::Vector2 distance = pos2 - distance;
+
+		float distanceSquared = (distance.x * distance.x) + (distance.y * distance.y);
+
+		return distanceSquared <= (size2.x * size2.x);
+	}
 	//
 	//bool RecOnCircle(vec::Vector2 pos1, vec::Vector2 size1, vec::Vector2 pos2, float radius, vec::Vector2& point)
 	//{
