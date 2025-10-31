@@ -623,6 +623,7 @@ namespace drw {
 	void Text(TextData& textData, vec::Vector2 pos = { 0,0 }, float fontSize = 0.1f, vec::Vector2 offset = { 0,0 }, bColor color = WHITE_B);
 	void Triangle(vec::Vector2 p1, vec::Vector2 p2, vec::Vector2 p3, bColor color = WHITE_B);
 	void Rectangle(vec::Vector2 pos, vec::Vector2 size, bColor color = WHITE_B, vec::Vector2 offset = { 0,0 });
+	void Rectangle(vec::Vector4 corners, bColor color = WHITE_B, vec::Vector2 offset = { 0,0 });
 	void Circle(vec::Vector2 pos, vec::Vector2 size, bColor color = WHITE_B);
 	void Line(vec::Vector2 start, vec::Vector2 end, bColor color = WHITE_B);
 	void Line(vec::Vector2 start, vec::Vector2 end,float size = 0.0f, bColor color = WHITE_B);

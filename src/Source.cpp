@@ -230,6 +230,12 @@ int Test02() {
 	prtcl::ParticleActivator mouseParticleActivator;
 	prtcl::ParticleData mouseParticles[MOUSE_PARTICLE_COUNT]; // Array estático
 
+	vec::Vector2 testRec;
+	vec::Vector2 testRecSize;
+	vec::Vector2 mouseCircle;
+	vec::Vector2 mouseCircleSize;
+	vec::Vector2 testCrash;
+
 	// Pausa
 	btn::Button btnReturn;
 	btn::Button btnExitPause;
@@ -300,6 +306,11 @@ int Test02() {
 	btn::Init(btnPause);
 
 	timerTextData.fontSize = 0.1f;
+	
+	testRec = {0.5f,0.5f};
+	testRecSize = {0.125f,0.125f};
+	mouseCircle = { 0.5f, 0.5f };
+	mouseCircleSize = 0.05f;
 
 	// Partículas del mouse
 	mouseParticleActivator.loop = true;
@@ -368,6 +379,13 @@ int Test02() {
 			// Actualizar partículas
 			mouseParticleActivator.pos = rend::mousePos;
 			prtcl::Update(mouseParticleActivator, mouseParticles);
+
+			mouseCircle = rend::mousePos;
+
+			if (coll::RecOnCircle(testRec, testRecSize, mouseCircle, mouseCircleSize, testCrash)) {
+				std::cout << "collided" << rend::frameCounter << "\n";
+			}
+
 			break;
 
 		case GameState::CREDITS:
@@ -392,6 +410,8 @@ int Test02() {
 			break;
 		}
 
+		drw::Rectangle(vec::Vector4(0.0f,0.0f,0.95f,1.0f),BLUE_B);
+
 		bLib::UpdateEnd();
 
 		// --- Draw ---
@@ -415,6 +435,11 @@ int Test02() {
 			// Dibujar el timer
 			timerTextData.text = std::to_string(gameTimer);
 			drw::Text(timerTextData.text.c_str(), timerTextData, { 0.5f, 0.5f }, timerTextData.fontSize, { 0,0 }, WHITE_B);
+			
+			drw::Rectangle(testRec, testRecSize,RED_B);
+			drw::Circle(mouseCircle, mouseCircleSize,BLUE_B);
+			drw::Circle(testCrash, {0.025f,0.025f},MAGENTA_B);
+			
 			break;
 
 		case GameState::CREDITS:

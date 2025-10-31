@@ -577,6 +577,17 @@ namespace drw {
 		}
 	}
 
+	void Rectangle(vec::Vector4 corners, bColor color, vec::Vector2 offset)
+	{
+		vec::Vector2 corner1 = { corners.x,corners.y };
+		vec::Vector2 corner2 = { corners.z,corners.w };
+		
+		vec::Vector2 pos = corner1 + (corner2 - corner1) * 0.5f;
+		vec::Vector2 size = { (corner2.x - corner1.x) * rend::windowRatio, corner2.y - corner1.y };
+
+		Rectangle(pos,size,color,offset);
+	}
+
 	void Circle(vec::Vector2 pos, vec::Vector2 size, bColor color)
 	{
 
