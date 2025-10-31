@@ -422,6 +422,12 @@ namespace drw {
 	{
 		//vec::Vector2 textSize = fontSize;
 
+		bColor white = WHITE_B;
+
+		if (color.r == white.r && color.g == white.g && color.b == white.b && color.a == white.a) {
+			color = textData.color;
+		}
+
 		float pixelFontSize = fontSize * rend::windowSize.y; // <--- CORRECCIÓN AQUÍ
 
 		switch (rend::activeGraphics)

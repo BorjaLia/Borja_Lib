@@ -595,6 +595,8 @@ namespace drw {
 		std::string text = "text";
 		float fontSize = 0.1f;
 
+		bColor color = WHITE_B;
+
 		vec::Vector2 size = { 0,0 };
 		vec::Vector2 origin = { 0,0 };
 		float rotation = 0;
@@ -729,8 +731,6 @@ namespace btn {
 
 		bColor mainColor = LIGHTGREY_B;
 		bColor hoveredColor = DARKGREY_B;
-
-		bColor textColor = GREEN_B;
 
 		//textures
 		bool useSprite = false;

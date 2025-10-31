@@ -168,7 +168,7 @@ namespace btn {
 			drw::Rectangle(button.pos, button.size, button.activeColor, button.offset);
 		}
 		if (button.useText) {
-			drw::Text(button.textData.text.c_str(), button.textData, button.pos, button.textData.fontSize, button.offset, button.textColor);
+			drw::Text(button.textData.text.c_str(), button.textData, button.pos, button.textData.fontSize, button.offset, button.textData.color);
 		}
 		button.offset = tempOffset;
 	}
