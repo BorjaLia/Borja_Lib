@@ -44,18 +44,13 @@ namespace drw {
 
 	int drw::InitSpriteData(SpriteData& spriteData)
 	{
-		// 1. Añade una copia del spriteData al final del vector
 		spriteDataList.push_back(spriteData);
 
-		// 2. El nuevo ID es el índice de ese elemento
 		int newID = static_cast<int>(spriteDataList.size()) - 1;
 
-		// 3. Obtenemos una referencia al sprite DENTRO del vector
-		//    para poder modificarlo (cargarle el ID y la resolución)
 		SpriteData& newSpriteInVector = spriteDataList[newID];
 		newSpriteInVector.active = true;
 
-		// 4. Cargamos la textura real
 		switch (rend::activeGraphics)
 		{
 		case rend::GraphicsLib::RAYLIB: {
@@ -70,15 +65,9 @@ namespace drw {
 		case rend::GraphicsLib::SIGIL: {
 #ifdef HAS_SIGIL
 			newSpriteInVector.id = slLoadTexture(newSpriteInVector.file.c_str());
-			// Como dijimos, la resolución para Sigil debe venir
-			// pre-configurada en el 'spriteData' que se pasó como parámetro.
-			if (newSpriteInVector.resolution.x == 0) {
-				// Opcional: poner un 'log' de advertencia
-			}
 #endif
 			break;
 		}
-									 // ...
 		}
 
 		return newID;
@@ -345,16 +334,16 @@ namespace drw {
 #ifdef HAS_RAYLIB
 
 			// --- BORRAR TODO LO ANTIGUO (DrawTexture, DrawTextureEx) ---
-		// El código comentado que tenías aquí era una mezcla de ideas.
-		// Esta es la implementación limpia y final:
+		// El cÃ³digo comentado que tenÃ­as aquÃ­ era una mezcla de ideas.
+		// Esta es la implementaciÃ³n limpia y final:
 
-		// <--- CORRECCIÓN CON DRAWTEXTUREPRO ---
+		// <--- CORRECCIÃ“N CON DRAWTEXTUREPRO ---
 
-		// 1. Definimos la textura a usar (¡inicializada a {}!)
+		// 1. Definimos la textura a usar (Â¡inicializada a {}!)
 			Texture2D texture = {};
 			texture.id = sprite.id;
 
-			// 2. Definimos el rectángulo de ORIGEN (Source)
+			// 2. Definimos el rectÃ¡ngulo de ORIGEN (Source)
 			//    Esto le dice a Raylib que use la textura COMPLETA.
 			vec::Vector4 sourceRec = {
 				0.0f,
@@ -363,22 +352,22 @@ namespace drw {
 				sprite.resolution.y
 			};
 
-			// 3. Calculamos el tamaño en PÍXELES (corregido con aspect ratio)
+			// 3. Calculamos el tamaÃ±o en PÃXELES (corregido con aspect ratio)
 			//    Usamos 'windowSize.y' para AMBOS ejes.
 			float pixelWidth = size.x * rend::windowSize.y;
 			float pixelHeight = size.y * rend::windowSize.y;
 			float pixelOffsetX = offset.x * rend::windowSize.y;
 			float pixelOffsetY = offset.y * rend::windowSize.y;
 
-			// 4. Calculamos la posición en PÍXELES (respetando aspect ratio)
-			//    La posición 'x' usa 'windowSize.x'
-			//    La posición 'y' usa 'windowSize.y'
+			// 4. Calculamos la posiciÃ³n en PÃXELES (respetando aspect ratio)
+			//    La posiciÃ³n 'x' usa 'windowSize.x'
+			//    La posiciÃ³n 'y' usa 'windowSize.y'
 			float pixelPosX = pos.x * rend::windowSize.x;
 			float pixelPosY = rend::windowSize.y * (1.0f - pos.y); // Tu Y-inversa
 
-			// 5. Definimos el rectángulo de DESTINO (Dest)
-			//    Esta es la posición y tamaño final en la pantalla.
-			//    Usamos tu lógica de origen en el centro (restando size/2).
+			// 5. Definimos el rectÃ¡ngulo de DESTINO (Dest)
+			//    Esta es la posiciÃ³n y tamaÃ±o final en la pantalla.
+			//    Usamos tu lÃ³gica de origen en el centro (restando size/2).
 			vec::Vector4 destRec = {
 				pixelPosX + pixelOffsetX - pixelWidth / 2.0f,
 				pixelPosY - pixelOffsetY - pixelHeight / 2.0f, // (Tu Y-inversa para pos, Y-normal para offset)
@@ -386,7 +375,7 @@ namespace drw {
 				pixelHeight
 			};
 
-			// 6. Definimos el ORIGEN de dibujado (para rotación)
+			// 6. Definimos el ORIGEN de dibujado (para rotaciÃ³n)
 			//    Como ya calculamos el 'destRec' con el centro, el origen es (0,0)
 			Vector2 origin = { 0.0f, 0.0f };
 
@@ -404,9 +393,9 @@ namespace drw {
 			slSetForeColor(static_cast<double>(color.r / 255.0f), static_cast<double>(color.g / 255.0f), static_cast<double>(color.b / 255.0f), static_cast<double>(color.a / 255.0f));
 			slSprite(
 				sprite.id,
-				pos.x * rend::windowSize.x + offset.x * rend::windowSize.y, // <--- 'y' aquí
+				pos.x * rend::windowSize.x + offset.x * rend::windowSize.y, // <--- 'y' aquÃ­
 				pos.y * rend::windowSize.y + offset.y * rend::windowSize.y,
-				size.x * rend::windowSize.y, // <--- 'y' aquí
+				size.x * rend::windowSize.y, // <--- 'y' aquÃ­
 				size.y * rend::windowSize.y
 			);
 #endif
@@ -428,7 +417,7 @@ namespace drw {
 			color = textData.color;
 		}
 
-		float pixelFontSize = fontSize * rend::windowSize.y; // <--- CORRECCIÓN AQUÍ
+		float pixelFontSize = fontSize * rend::windowSize.y; // <--- CORRECCIÃ“N AQUÃ
 
 		switch (rend::activeGraphics)
 		{
@@ -442,12 +431,12 @@ namespace drw {
 			//textSize.y = tempFontSize / rend::windowSize.y;
 			//DrawTextPro(fontDataList[textData.fontID].font, text, { pos.x * rend::windowSize.x + offset.x * rend::windowSize.x - rend::windowSize.x * textSize.x / 3, rend::windowSize.y * (1.0f - pos.y) + (1.0f - offset.y * rend::windowSize.y) - rend::windowSize.y * textSize.y / 2 }, { textData.origin.x,textData.origin.y }, textData.rotation, tempFontSize, fontDataList[textData.fontID].spacing, { color.r,color.g,color.b,color.a });
 
-// 2. Medir en píxeles
+// 2. Medir en pÃ­xeles
 			Vector2 pixelTextSize = MeasureTextEx(fontDataList[textData.fontID].font, text, pixelFontSize, fontDataList[textData.fontID].spacing);
 
-			// 3. Calcular posición en píxeles (corregido)
+			// 3. Calcular posiciÃ³n en pÃ­xeles (corregido)
 			vec::Vector2 pixelPos = { pos.x * rend::windowSize.x, rend::windowSize.y * (1.0f - pos.y) }; // Tu Y-inversa
-			vec::Vector2 pixelOffset = { offset.x * rend::windowSize.y, offset.y * rend::windowSize.y }; // <--- CORRECCIÓN AQUÍ
+			vec::Vector2 pixelOffset = { offset.x * rend::windowSize.y, offset.y * rend::windowSize.y }; // <--- CORRECCIÃ“N AQUÃ
 
 			// 4. Calcular punto de dibujado (asumiendo centro)
 			Vector2 drawPos = {
@@ -458,10 +447,10 @@ namespace drw {
 			DrawTextPro(
 				fontDataList[textData.fontID].font,
 				text,
-				drawPos, // Posición calculada
+				drawPos, // PosiciÃ³n calculada
 				{ textData.origin.x,textData.origin.y }, // Origen (probablemente 0,0 si centramos manualmente)
 				textData.rotation,
-				pixelFontSize, // Tamaño en píxeles
+				pixelFontSize, // TamaÃ±o en pÃ­xeles
 				fontDataList[textData.fontID].spacing,
 				{ color.r,color.g,color.b,color.a }
 			);
@@ -476,16 +465,16 @@ namespace drw {
 			//textSize.y = static_cast<float>(slGetTextHeight(text)) / rend::windowSize.y;
 			//slText(pos.x * rend::windowSize.x + offset.x * rend::windowSize.x - rend::windowSize.x * textSize.x / 2, rend::windowSize.y * pos.y + offset.y * rend::windowSize.y - rend::windowSize.y * textSize.y / 2, text);
 
-			slSetFont(textData.fontID, static_cast<int>(pixelFontSize)); // Usar tamaño en píxeles
+			slSetFont(textData.fontID, static_cast<int>(pixelFontSize)); // Usar tamaÃ±o en pÃ­xeles
 			slSetFontSize(static_cast<int>(pixelFontSize));
 			slSetForeColor(static_cast<double>(color.r / 255.0f), static_cast<double>(color.g / 255.0f), static_cast<double>(color.b / 255.0f), static_cast<double>(color.a / 255.0f));
 
-			// 2. Medir en píxeles
+			// 2. Medir en pÃ­xeles
 			float pixelWidth = static_cast<float>(slGetTextWidth(text));
 			float pixelHeight = static_cast<float>(slGetTextHeight(text));
 
-			// 3. Calcular posición en píxeles (corregido)
-			float pixelPosX = pos.x * rend::windowSize.x + offset.x * rend::windowSize.y; // <--- 'y' aquí
+			// 3. Calcular posiciÃ³n en pÃ­xeles (corregido)
+			float pixelPosX = pos.x * rend::windowSize.x + offset.x * rend::windowSize.y; // <--- 'y' aquÃ­
 			float pixelPosY = pos.y * rend::windowSize.y + offset.y * rend::windowSize.y;
 
 			// 4. Dibujar (centrado)
@@ -549,9 +538,9 @@ namespace drw {
 #ifdef HAS_RAYLIB
 			//DrawRectangle(static_cast<int>(pos.x * rend::windowSize.x + offset.x * rend::windowSize.x - rend::windowSize.x * size.x / 2.0f), static_cast<int>(rend::windowSize.y * (1.0f - pos.y) + (1.0f - offset.y * rend::windowSize.y) - rend::windowSize.y * size.y / 2.0f), static_cast<int>(size.x * rend::windowSize.x), static_cast<int>(size.y * rend::windowSize.y), { color.r,color.g,color.b,color.a });
 			DrawRectangle(
-				static_cast<int>(pos.x * rend::windowSize.x + offset.x * rend::windowSize.y - rend::windowSize.y * size.x / 2.0f), // <--- 'y' aquí y aquí
-				static_cast<int>(rend::windowSize.y * (1.0f - pos.y) + (1.0f - offset.y * rend::windowSize.y) - rend::windowSize.y * size.y / 2.0f), // (Tu lógica de Y-inversa)
-				static_cast<int>(size.x * rend::windowSize.y), // <--- 'y' aquí
+				static_cast<int>(pos.x * rend::windowSize.x + offset.x * rend::windowSize.y - rend::windowSize.y * size.x / 2.0f), // <--- 'y' aquÃ­ y aquÃ­
+				static_cast<int>(rend::windowSize.y * (1.0f - pos.y) + (1.0f - offset.y * rend::windowSize.y) - rend::windowSize.y * size.y / 2.0f), // (Tu lÃ³gica de Y-inversa)
+				static_cast<int>(size.x * rend::windowSize.y), // <--- 'y' aquÃ­
 				static_cast<int>(size.y * rend::windowSize.y),
 				{ color.r,color.g,color.b,color.a });
 #endif
@@ -564,9 +553,9 @@ namespace drw {
 			//slRectangleFill(pos.x * rend::windowSize.x + offset.x * rend::windowSize.x, pos.y * rend::windowSize.y + offset.y * rend::windowSize.y, size.x * rend::windowSize.x, size.y * rend::windowSize.y);
 			slSetForeColor(static_cast<double>(color.r / 255.0f), static_cast<double>(color.g / 255.0f), static_cast<double>(color.b / 255.0f), static_cast<double>(color.a / 255.0f));
 			slRectangleFill(
-				pos.x * rend::windowSize.x + offset.x * rend::windowSize.y, // <--- 'y' aquí
+				pos.x * rend::windowSize.x + offset.x * rend::windowSize.y, // <--- 'y' aquÃ­
 				pos.y * rend::windowSize.y + offset.y * rend::windowSize.y,
-				size.x * rend::windowSize.y, // <--- 'y' aquí
+				size.x * rend::windowSize.y, // <--- 'y' aquÃ­
 				size.y * rend::windowSize.y
 			);
 #endif
@@ -650,4 +639,5 @@ namespace drw {
 			break;
 		}
 	}
+
 }
