@@ -332,55 +332,55 @@ namespace drw {
 		case rend::GraphicsLib::RAYLIB: {
 
 #ifdef HAS_RAYLIB
-
-			// --- BORRAR TODO LO ANTIGUO (DrawTexture, DrawTextureEx) ---
-		// El código comentado que tenías aquí era una mezcla de ideas.
-		// Esta es la implementación limpia y final:
-
-		// <--- CORRECCIÓN CON DRAWTEXTUREPRO ---
-
-		// 1. Definimos la textura a usar (¡inicializada a {}!)
 			Texture2D texture = {};
 			texture.id = sprite.id;
+			texture.width = static_cast<int>(size.x * rend::windowSize.x);
+			texture.height = static_cast<int>(size.y * rend::windowSize.y);
 
-			// 2. Definimos el rectángulo de ORIGEN (Source)
-			//    Esto le dice a Raylib que use la textura COMPLETA.
-			vec::Vector4 sourceRec = {
-				0.0f,
-				0.0f,
-				sprite.resolution.x,
-				sprite.resolution.y
-			};
+			if (rend::pixelMode) {
+				SetTextureFilter(texture, TEXTURE_FILTER_POINT);
+			}
 
-			// 3. Calculamos el tamaño en PÍXELES (corregido con aspect ratio)
-			//    Usamos 'windowSize.y' para AMBOS ejes.
-			float pixelWidth = size.x * rend::windowSize.y;
-			float pixelHeight = size.y * rend::windowSize.y;
-			float pixelOffsetX = offset.x * rend::windowSize.y;
-			float pixelOffsetY = offset.y * rend::windowSize.y;
+			DrawTexture(texture, static_cast<int>(pos.x * rend::windowSize.x + offset.x * rend::windowSize.x - rend::windowSize.x * size.x / 2.0f), static_cast<int>(rend::windowSize.y * (1.0f - pos.y) + (1.0f - offset.y * rend::windowSize.y) - rend::windowSize.y * size.y / 2.0f), { color.r,color.g,color.b,color.a });
 
-			// 4. Calculamos la posición en PÍXELES (respetando aspect ratio)
-			//    La posición 'x' usa 'windowSize.x'
-			//    La posición 'y' usa 'windowSize.y'
-			float pixelPosX = pos.x * rend::windowSize.x;
-			float pixelPosY = rend::windowSize.y * (1.0f - pos.y); // Tu Y-inversa
+			//// 2. Definimos el rectángulo de ORIGEN (Source)
+			////    Esto le dice a Raylib que use la textura COMPLETA.
+			//vec::Vector4 sourceRec = {
+			//	0.0f,
+			//	0.0f,
+			//	sprite.resolution.x,
+			//	sprite.resolution.y
+			//};
 
-			// 5. Definimos el rectángulo de DESTINO (Dest)
-			//    Esta es la posición y tamaño final en la pantalla.
-			//    Usamos tu lógica de origen en el centro (restando size/2).
-			vec::Vector4 destRec = {
-				pixelPosX + pixelOffsetX - pixelWidth / 2.0f,
-				pixelPosY - pixelOffsetY - pixelHeight / 2.0f, // (Tu Y-inversa para pos, Y-normal para offset)
-				pixelWidth,
-				pixelHeight
-			};
+			//// 3. Calculamos el tamaño en PÍXELES (corregido con aspect ratio)
+			////    Usamos 'windowSize.y' para AMBOS ejes.
+			//float pixelWidth = size.x * rend::windowSize.y;
+			//float pixelHeight = size.y * rend::windowSize.y;
+			//float pixelOffsetX = offset.x * rend::windowSize.y;
+			//float pixelOffsetY = offset.y * rend::windowSize.y;
 
-			// 6. Definimos el ORIGEN de dibujado (para rotación)
-			//    Como ya calculamos el 'destRec' con el centro, el origen es (0,0)
-			Vector2 origin = { 0.0f, 0.0f };
+			//// 4. Calculamos la posición en PÍXELES (respetando aspect ratio)
+			////    La posición 'x' usa 'windowSize.x'
+			////    La posición 'y' usa 'windowSize.y'
+			//float pixelPosX = pos.x * rend::windowSize.x;
+			//float pixelPosY = rend::windowSize.y * (1.0f - pos.y); // Tu Y-inversa
 
-			// 8. Dibujar
-			DrawTexturePro(texture, { sourceRec.x,sourceRec.y,sourceRec.z,sourceRec.w }, { destRec.x,destRec.y,destRec.z,destRec.w }, origin, 0.0f, { color.r,color.g,color.b,color.a });
+			//// 5. Definimos el rectángulo de DESTINO (Dest)
+			////    Esta es la posición y tamaño final en la pantalla.
+			////    Usamos tu lógica de origen en el centro (restando size/2).
+			//vec::Vector4 destRec = {
+			//	pixelPosX + pixelOffsetX - pixelWidth / 2.0f,
+			//	pixelPosY - pixelOffsetY - pixelHeight / 2.0f, // (Tu Y-inversa para pos, Y-normal para offset)
+			//	pixelWidth,
+			//	pixelHeight
+			//};
+
+			//// 6. Definimos el ORIGEN de dibujado (para rotación)
+			////    Como ya calculamos el 'destRec' con el centro, el origen es (0,0)
+			//Vector2 origin = { 0.0f, 0.0f };
+
+			//// 8. Dibujar
+			//DrawTexturePro(texture, { sourceRec.x,sourceRec.y,sourceRec.z,sourceRec.w }, { destRec.x,destRec.y,destRec.z,destRec.w }, origin, 0.0f, { color.r,color.g,color.b,color.a });
 #endif
 			break;
 		}
@@ -638,6 +638,38 @@ namespace drw {
 		default:
 			break;
 		}
+	}
+
+	bool drw::SpriteWorld(SpriteData sprite, vec::Vector2 worldPos, vec::Vector2 worldSize, vec::Vector2 worldOffset, bColor color)
+	{
+		vec::Vector2 screenPos = cam::WorldToScreen(worldPos);
+		vec::Vector2 screenSize = cam::GetWorldToScreenSize(worldSize);
+		vec::Vector2 screenOffset = cam::GetWorldToScreenSize(worldOffset);
+		return drw::Sprite(sprite, screenPos, screenSize, screenOffset, color);
+	}
+
+	void drw::RectangleWorld(vec::Vector2 worldPos, vec::Vector2 worldSize, bColor color, vec::Vector2 worldOffset)
+	{
+		vec::Vector2 screenPos = cam::WorldToScreen(worldPos);
+		vec::Vector2 screenSize = cam::GetWorldToScreenSize(worldSize);
+		vec::Vector2 screenOffset = cam::GetWorldToScreenSize(worldOffset);
+
+		drw::Rectangle(screenPos, screenSize, color, screenOffset);
+	}
+
+	bool drw::AnimationWorld(AnimationData& animation, vec::Vector2 worldPos, vec::Vector2 worldSize, vec::Vector2 worldOffset, bColor color)
+	{
+		if (!animation.active) {
+			return false;
+		}
+
+		if (rend::secondCounter - animation.timeOffset > animation.duration) {
+			animation.timeOffset = rend::secondCounter;
+		}
+
+		int frameIndex = animation.id + (static_cast<int>(((rend::secondCounter - animation.timeOffset) / animation.duration) * animation.frames));
+
+		return drw::SpriteWorld(spriteDataList[frameIndex], worldPos, worldSize, worldOffset, color);
 	}
 
 }

@@ -114,20 +114,20 @@ namespace prtcl {
 		}
 	}
 
-	void Draw(ParticleData particles[])
+	void prtcl::Draw(ParticleData particles[])
 	{
 		for (int i = 0; i < particles[0].amount; i++)
 		{
 			if (particles[i].alive && particles[i].active) {
 
 				if (particles[i].animated) {
-					drw::Animation(particles[i].animation, particles[i].pos, particles[i].size);
+					drw::AnimationWorld(particles[i].animation, particles[i].pos, particles[i].size);
 				}
 				else {
-					drw::Sprite(drw::spriteDataList[particles[i].id], particles[i].pos, particles[i].size);
+					drw::SpriteWorld(drw::spriteDataList[particles[i].id], particles[i].pos, particles[i].size);
 				}
 				if (rend::devInfo == rend::InfoMode::ADVANCED) {
-					drw::Line(particles[i].pos, particles[i].direction.asCircular(), 0.025f, MAGENTA_B);
+					// drw::Line(particles[i].pos, particles[i].direction.asCircular(), 0.025f, MAGENTA_B); // <-- LÍNEA ANTIGUA
 				}
 			}
 		}

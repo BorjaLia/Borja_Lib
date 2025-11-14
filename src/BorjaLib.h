@@ -627,6 +627,50 @@ namespace drw {
 	void Circle(vec::Vector2 pos, vec::Vector2 size, bColor color = WHITE_B);
 	void Line(vec::Vector2 start, vec::Vector2 end, bColor color = WHITE_B);
 	void Line(vec::Vector2 start, vec::Vector2 end,float size = 0.0f, bColor color = WHITE_B);
+
+	bool SpriteWorld(SpriteData sprite, vec::Vector2 worldPos, vec::Vector2 worldSize, vec::Vector2 worldOffset = { 0,0 }, bColor color = WHITE_B);
+	void RectangleWorld(vec::Vector2 worldPos, vec::Vector2 worldSize, bColor color, vec::Vector2 worldOffset = { 0,0 });
+	bool AnimationWorld(AnimationData& animation, vec::Vector2 worldPos, vec::Vector2 worldSize, vec::Vector2 worldOffset = { 0,0 }, bColor color = WHITE_B);
+}
+
+namespace cam
+{
+	struct Camera
+	{
+		vec::Vector2 pos;
+
+		float zoom;
+
+		float rotation;
+	};
+
+	void Init(vec::Vector2 startPos = { 0.0f, 0.0f }, float startZoom = 1.0f, float startRotation = 0.0f);
+
+	void Move(vec::Vector2 amount);
+	void Zoom(float amount);
+	void Rotate(float degrees);
+
+	void SetPosition(vec::Vector2 newPos);
+	void SetZoom(float newZoom);
+	void SetRotation(float newRotation);
+	
+	extern Camera mainCamera;
+
+	// --- Funciones de Conversión (usando mainCamera) ---
+
+	// Convierte un punto del Espacio de Mundo al Espacio de Pantalla (0-1)
+	vec::Vector2 WorldToScreen(vec::Vector2 worldPos);
+
+	// Convierte un punto del Espacio de Pantalla (0-1) al Espacio de Mundo
+	vec::Vector2 ScreenToWorld(vec::Vector2 screenPos);
+
+	// --- Funciones de Conversión (para tamaños/escalas) ---
+
+	// Convierte un 'size' del Espacio de Mundo a un 'size' del Espacio de Pantalla (0-1)
+	vec::Vector2 GetWorldToScreenSize(vec::Vector2 worldSize);
+
+	// Convierte un 'size' del Espacio de Pantalla (0-1) a un 'size' del Espacio de Mundo
+	vec::Vector2 GetScreenToWorldSize(vec::Vector2 screenSize);
 }
 
 namespace snd {

@@ -192,8 +192,6 @@ int Test01() {
 	return 0;
 }
 
-int Test02() {
-
 	// --- Definición de Estados del Juego ---
 	enum class GameState {
 		MAIN_MENU,
@@ -201,6 +199,9 @@ int Test02() {
 		CREDITS,
 		PAUSED
 	};
+
+int Test02() {
+
 
 
 
@@ -472,7 +473,227 @@ int Test02() {
 
 }
 
+int Test03() {
+	// --- Inicialización de la Librería ---
+	bool isRunning = true;
+	bLib::Init("Testeo v3 - Camara");
+	GameState currentState = GameState::MAIN_MENU;
+
+	// --- Variables Globales del Juego ---
+	float gameTimer = 0.0f;
+
+	// --- Declaración de todos los objetos ---
+	// Menú Principal
+	btn::Button btnPlay;
+	btn::Button btnCredits;
+	btn::Button btnExit;
+
+	// Créditos
+	btn::Button btnBack;
+	drw::TextData creditsTextData;
+
+	// Gameplay (HUD)
+	btn::Button btnPause;
+	drw::TextData timerTextData; // Se usa para Gameplay y Pausa
+	drw::TextData gameplayPlaceholderText; // Texto para estado de juego
+
+	// Pausa
+	btn::Button btnReturn;
+	btn::Button btnExitPause;
+
+	// --- Inicialización de Assets ---
+	// ¡No se necesita! bLib::Init() carga el sprite por defecto (ID 0)
+	// que usan los botones.
+
+	// --- Inicialización de Objetos del Juego ---
+
+	vec::Vector2 buttonSize = { 0.3f, 0.1f };
+
+	// 1. Menú Principal (Espacio de Pantalla 0-1)
+	btnPlay.pos = { 0.5f, 0.6f };
+	btnPlay.size = buttonSize;
+	btnPlay.useSprite = true;
+	btnPlay.textData.text = "Play";
+	btn::Init(btnPlay);
+
+	btnCredits.pos = { 0.5f, 0.5f };
+	btnCredits.size = buttonSize;
+	btnCredits.useSprite = true;
+	btnCredits.textData.text = "Credits";
+	
+	drw::SpriteData btnTexture;
+	btnTexture.size = { 0.1f,0.1f };
+	btnTexture.file = "res/sprites/one.png";
+
+	btnCredits.mainTextureID = drw::InitSpriteData(btnTexture);
+	
+	btn::Init(btnCredits);
+
+	btnExit.pos = { 0.5f, 0.4f };
+	btnExit.size = buttonSize;
+	btnExit.useSprite = true;
+	btnExit.textData.text = "Exit";
+	btn::Init(btnExit);
+
+	// 2. Créditos (Espacio de Pantalla 0-1)
+	btnBack.pos = { 0.5f, 0.3f };
+	btnBack.size = buttonSize;
+	btnBack.useSprite = true;
+	btnBack.textData.text = "Volver";
+	btn::Init(btnBack);
+
+	creditsTextData.fontSize = 0.05f;
+	creditsTextData.text = "Hecho con BorjaLib";
+
+	// 3. Gameplay (Espacio de Pantalla 0-1)
+	btnPause.pos = { 0.5f, 0.9f };
+	btnPause.size = buttonSize;
+	btnPause.useSprite = true;
+	btnPause.textData.text = "Pausa";
+	btn::Init(btnPause);
+
+	timerTextData.fontSize = 0.1f;
+
+	gameplayPlaceholderText.fontSize = 0.08f;
+	gameplayPlaceholderText.text = "GAMEPLAY";
+
+	// 4. Pausa (Espacio de Pantalla 0-1)
+	btnReturn.pos = { 0.5f, 0.6f };
+	btnReturn.size = buttonSize;
+	btnReturn.useSprite = true;
+	btnReturn.textData.text = "Return";
+	btn::Init(btnReturn);
+
+	btnExitPause.pos = { 0.5f, 0.5f };
+	btnExitPause.size = buttonSize;
+	btnExitPause.useSprite = true;
+	btnExitPause.textData.text = "Exit to Menu";
+	btn::Init(btnExitPause);
+
+
+	// --- Bucle Principal del Juego ---
+	while (isRunning) {
+
+		isRunning = !rend::ShouldExit();
+
+		// --- Update ---
+		bLib::UpdateStart();
+
+		// Reseteamos los botones para evitar 'signals' fantasma
+		// (Asumo que no tienes una función global de reseteo,
+		// así que los reseteo individualmente al cambiar de estado)
+		// ... (Esto sería más robusto, pero lo omito por simplicidad)
+
+		switch (currentState)
+		{
+		case GameState::MAIN_MENU:
+			// Lógica de Update del Menú
+			btn::UpdateInput(btnPlay);
+			btn::UpdateInput(btnCredits);
+			btn::UpdateInput(btnExit);
+
+			if (btnPlay.signal) {
+				currentState = GameState::GAMEPLAY;
+				gameTimer = 0.0f; // Reiniciar timer
+			}
+			if (btnCredits.signal) {
+				currentState = GameState::CREDITS;
+			}
+			if (btnExit.signal) {
+				isRunning = false;
+			}
+			break;
+
+		case GameState::GAMEPLAY:
+			// Lógica de Update del Juego
+			gameTimer += rend::deltaTime; // El timer corre
+
+			// El HUD (botón de pausa) se actualiza
+			btn::UpdateInput(btnPause);
+			if (btnPause.signal) {
+				currentState = GameState::PAUSED;
+			}
+
+			// --- Aquí irá la lógica del jugador (WASD, etc.) ---
+
+			break;
+
+		case GameState::CREDITS:
+			// Lógica de Update de Créditos
+			btn::UpdateInput(btnBack);
+			if (btnBack.signal) {
+				currentState = GameState::MAIN_MENU;
+			}
+			break;
+
+		case GameState::PAUSED:
+			// Lógica de Update de Pausa (el timer no avanza)
+			btn::UpdateInput(btnReturn);
+			btn::UpdateInput(btnExitPause);
+
+			if (btnReturn.signal) {
+				currentState = GameState::GAMEPLAY;
+			}
+			if (btnExitPause.signal) {
+				currentState = GameState::MAIN_MENU;
+			}
+			break;
+		}
+
+		bLib::UpdateEnd();
+
+		// --- Draw ---
+		drw::Begin();
+		drw::Clear(DARKGREY_B);
+
+		switch (currentState)
+		{
+		case GameState::MAIN_MENU:
+			// Dibujar Menú (Espacio de Pantalla)
+			btn::Draw(btnPlay);
+			btn::Draw(btnCredits);
+			btn::Draw(btnExit);
+			break;
+
+		case GameState::GAMEPLAY:
+			// --- Aquí dibujaremos los objetos del MUNDO (con ...World) ---
+			// (¡Por ahora no hay nada!)
+
+			// --- Dibujar el HUD (Espacio de Pantalla) ---
+			btn::Draw(btnPause);
+			drw::Text(gameplayPlaceholderText.text.c_str(), gameplayPlaceholderText, { 0.5f, 0.5f }, gameplayPlaceholderText.fontSize, { 0,0 }, WHITE_B);
+
+			break;
+
+		case GameState::CREDITS:
+			// Dibujar Créditos (Espacio de Pantalla)
+			btn::Draw(btnBack);
+			drw::Text(creditsTextData.text.c_str(), creditsTextData, { 0.5f, 0.6f }, creditsTextData.fontSize, { 0,0 }, WHITE_B);
+			break;
+
+		case GameState::PAUSED:
+			// Dibujar Pausa (Espacio de Pantalla)
+			btn::Draw(btnReturn);
+			btn::Draw(btnExitPause);
+
+			// Dibujar el timer (pausado)
+			timerTextData.text = std::to_string(gameTimer);
+			drw::Text(timerTextData.text.c_str(), timerTextData, { 0.5f, 0.3f }, timerTextData.fontSize, { 0,0 }, WHITE_B);
+			break;
+		}
+
+		drw::End();
+
+		// --- Sounds ---
+		// ...
+	}
+
+	// --- Cierre ---
+	rend::Close();
+	return 0;
+}
+
 int main() {
-	Test02();
+	Test03();
 	return 0;
 }
